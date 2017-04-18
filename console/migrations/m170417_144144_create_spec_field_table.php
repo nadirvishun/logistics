@@ -25,6 +25,7 @@ class m170417_144144_create_spec_field_table extends Migration
             'name' => $this->string(50)->notNull()->comment('规格名称'),
             'min' => $this->decimal(10, 3)->notNull()->comment('最小值'),
             'max' => $this->decimal(10, 3)->notNull()->comment('最大值'),
+            'by_number' => $this->boolean()->unsigned()->notNull()->defaultValue(0)->comment('是否按照件数计算:0否，1是'),
             'status' => $this->boolean()->unsigned()->notNull()->defaultValue(1)->comment('状态:0隐藏，1显示'),
             'sort' => $this->integer()->notNull()->defaultValue(0)->comment('排序'),
             'created_by' => $this->integer()->unsigned()->notNull()->comment('创建人'),
