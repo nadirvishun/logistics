@@ -5,12 +5,12 @@ namespace backend\models\search;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use backend\models\Admin;
+use backend\models\SpecField;
 
 /**
- * AdminSearch represents the model behind the search form about `backend\models\Admin`.
+ * SpecFieldSearch represents the model behind the search form about `backend\models\SpecField`.
  */
-class AdminSearch extends Admin
+class SpecFieldSearch extends SpecField
 {
     /**
      * @inheritdoc
@@ -18,8 +18,9 @@ class AdminSearch extends Admin
     public function rules()
     {
         return [
-            [['id', 'sex', 'last_login_time', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['username', 'auth_key', 'password_hash', 'password_reset_token', 'email', 'mobile', 'avatar', 'last_login_ip'], 'safe'],
+            [['id', 'by_number', 'status', 'sort', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
+            [['field_name', 'name'], 'safe'],
+            [['min', 'max'], 'number'],
         ];
     }
 
@@ -41,16 +42,16 @@ class AdminSearch extends Admin
      */
     public function search($params)
     {
-        $query = Admin::find();
+        $query = SpecField::find();
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-           // 'pagination' => [
-           //     'pageSize' => 20,
-            //],
-            //'sort' => ['defaultOrder' => ['id'=>SORT_DESC]],
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+            'sort' => ['defaultOrder' => ['sort' => SORT_DESC]],
         ]);
 
         $this->load($params);
@@ -64,21 +65,19 @@ class AdminSearch extends Admin
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'sex' => $this->sex,
-            'last_login_time' => $this->last_login_time,
+            'min' => $this->min,
+            'max' => $this->max,
+            'by_number' => $this->by_number,
             'status' => $this->status,
+            'sort' => $this->sort,
+            'created_by' => $this->created_by,
             'created_at' => $this->created_at,
+            'updated_by' => $this->updated_by,
             'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'username', $this->username])
-            ->andFilterWhere(['like', 'auth_key', $this->auth_key])
-            ->andFilterWhere(['like', 'password_hash', $this->password_hash])
-            ->andFilterWhere(['like', 'password_reset_token', $this->password_reset_token])
-            ->andFilterWhere(['like', 'email', $this->email])
-            ->andFilterWhere(['like', 'mobile', $this->mobile])
-            ->andFilterWhere(['like', 'avatar', $this->avatar])
-            ->andFilterWhere(['like', 'last_login_ip', $this->last_login_ip]);
+        $query->andFilterWhere(['like', 'field_name', $this->field_name])
+            ->andFilterWhere(['like', 'name', $this->name]);
 
         return $dataProvider;
     }

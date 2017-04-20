@@ -21,7 +21,7 @@ class m170417_144144_create_spec_field_table extends Migration
 
         $this->createTable(self::TBL_NAME, [
             'id' => $this->primaryKey()->comment('规格ID'),
-            'field_name' => $this->string(50)->notNull()->comment('规格字段名称'),
+            'field_name' => $this->string(50)->notNull()->unique()->comment('规格字段名称'),
             'name' => $this->string(50)->notNull()->comment('规格名称'),
             'min' => $this->decimal(10, 3)->notNull()->comment('最小值'),
             'max' => $this->decimal(10, 3)->notNull()->comment('最大值'),
