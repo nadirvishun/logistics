@@ -12,7 +12,7 @@ class m170402_093152_create_backend_menu_table extends Migration
     /**
      * @inheritdoc
      */
-    public function safeUp()
+    public function up()
     {
         $tableOptions = null;
         if ($this->db->driverName === 'mysql') {

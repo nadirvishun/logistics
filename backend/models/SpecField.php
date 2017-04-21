@@ -25,8 +25,8 @@ use yii\helpers\ArrayHelper;
  */
 class SpecField extends \yii\db\ActiveRecord
 {
-    const STATUS_YES = 0;//关闭
-    const STATUS_NO = 1;//开启
+    const STATUS_YES = 1;//显示
+    const STATUS_NO = 0;//隐藏
     const BY_NUM_YES = 1;//是
     const BY_NUM_NO = 0;//否
 
@@ -63,8 +63,14 @@ class SpecField extends \yii\db\ActiveRecord
             [['field_name', 'name', 'min', 'max'], 'required'],
             ['field_name', 'match', 'pattern' => '/^[a-z]\w*$/'],
             ['field_name', 'unique'],
+            //不能与region_price表字段名重复，只适用于新增，更新时由于牵扯到自身字段导致不能有效判定
+            ['field_name', 'in',
+                'not' => true,
+                'range' => array_keys(Yii::$app->db->getTableSchema(RegionPrice::tableName())->columns),
+                'on' => 'insert'
+            ],
             [['min', 'max'], 'number'],
-            [['by_number', 'status', 'sort'], 'integer'],
+            [['by_number', 'status', 'sort', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
             [['field_name', 'name'], 'string', 'max' => 50],
             [['created_by', 'created_at', 'updated_by', 'updated_at'], 'safe']
         ];
@@ -89,6 +95,26 @@ class SpecField extends \yii\db\ActiveRecord
             'updated_by' => '更新人',
             'updated_at' => '更新时间',
         ];
+    }
+
+    /**
+     * 获取field_name的字段数组，[field_name=>name]格式
+     */
+    public static function getFieldNameOptions()
+    {
+        $list = self::find()
+            ->select('name,field_name')
+            ->where(['status' => 1])
+            ->orderBy(['sort' => SORT_DESC, 'id' => SORT_ASC])
+            ->asArray()
+            ->all();
+        $arr = [];
+        if (!empty($list)) {
+            foreach ($list as $item) {
+                $arr[$item['field_name']] = $item['name'];
+            }
+        }
+        return $arr;
     }
 
     /**

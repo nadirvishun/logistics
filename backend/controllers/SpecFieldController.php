@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\models\RegionPrice;
 use Yii;
 use backend\models\SpecField;
 use backend\models\search\SpecFieldSearch;
@@ -17,7 +18,6 @@ class SpecFieldController extends BaseController
 {
     //引入trait，方便来组装字段属性
     use SchemaBuilderTrait;
-    const REGION_PRICE_TABLE = '{{%region_price}}';
 
     /**
      * @inheritdoc
@@ -86,17 +86,17 @@ class SpecFieldController extends BaseController
      */
     public function actionCreate()
     {
-//        print_r(Yii::$app->db->getTableSchema(self::REGION_PRICE_TABLE));exit;
         $model = new SpecField();
-        //
+        $model->scenario = 'insert';
+        //如果是提交数据
         if ($model->load(Yii::$app->request->post())) {
             //mysql中的ddl操作对回滚来说没用，所以事务不起作用
-            if($model->save()) {//如果保存成功
-                $id=$model->id;
+            if ($model->save()) {//如果保存成功
+                $id = $model->id;
                 try {
-                    //创建region_price表中字段，尽量先创建，如果出错直接终止了
+                    //创建region_price表中字段
                     Yii::$app->db->createCommand()
-                        ->addColumn(self::REGION_PRICE_TABLE,
+                        ->addColumn(RegionPrice::tableName(),
                             $model->field_name,
                             $this->decimal(10, 2)->notNull()->comment($model->name))
                         ->execute();
@@ -126,14 +126,42 @@ class SpecFieldController extends BaseController
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            //return $this->redirect(['view', 'id' => $model->id]);
-            return $this->redirectSuccess(['index'], Yii::t('common', 'Update Success'));
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+        if ($model->load(Yii::$app->request->post())) {
+            //先判定field_name有效性（排除原有自身的情况下，不能与其它字段重复）
+            $regionPriceFields = array_keys(Yii::$app->db->getTableSchema(RegionPrice::tableName())->columns);
+            foreach ($regionPriceFields as $key => $value) {
+                if ($model->getOldAttribute('field_name') == $value) {//不和原值比较
+                    continue;
+                }
+                if ($model->field_name == $value) {//如果新值与字段重复，则不能修改
+                    $model->addError('field_name', '名称已存在，请重新选择名称');
+                    break;
+                }
+            }
+            if (!$model->hasErrors() && $model->validate()) {
+                //如果字段名字发生变动，则修改表字段名称，只判定field_name即可，其余的无需修改
+                if ($model->isAttributeChanged('field_name')) {//如果有修改
+                    try {
+                        //修改region_price表中字段
+                        Yii::$app->db->createCommand()
+                            ->renameColumn(RegionPrice::tableName(),
+                                $model->getOldAttribute('field_name'),
+                                $model->field_name)
+                            ->execute();
+                    } catch (\Exception $e) {
+                        //如果修改字段失败，提示错误
+                        return $this->redirectError(['create'], '修改失败');
+                    }
+                }
+                //上面先进行验证,以免验证出错，保存时就不需要验证了
+                $model->save(false);
+                return $this->redirectSuccess(['index'], Yii::t('common', 'Update Success'));
+            }
         }
+        return $this->render('update', [
+            'model' => $model,
+        ]);
+
     }
 
     /**
@@ -144,8 +172,19 @@ class SpecFieldController extends BaseController
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
+        $model = $this->findModel($id);
+        //先删除region_price表中字段，然后在删除自身
+        try {
+            //修改region_price表中字段
+            Yii::$app->db->createCommand()
+                ->dropColumn(RegionPrice::tableName(),
+                    $model->field_name)
+                ->execute();
+        } catch (\Exception $e) {
+            //如果删除字段失败，提示错误
+            return $this->redirectError(['create'], '删除失败');
+        }
+        $model->delete();
         return $this->redirectSuccess(['index'], Yii::t('common', 'Delete Success'));
     }
 

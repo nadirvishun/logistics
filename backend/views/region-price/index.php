@@ -1,17 +1,16 @@
 <?php
 
-use backend\models\SpecField;
 use yii\helpers\Html;
 use kartik\grid\GridView;
-
+use yii\widgets\Pjax;
 /* @var $this yii\web\View */
-/* @var $searchModel backend\models\search\SpecFieldSearch */
+/* @var $searchModel backend\models\search\RegionPriceSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = '规格管理';
+$this->title = 'Region Prices';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="spec-field-index grid-view box box-primary">
+<div class="region-price-index grid-view box box-primary">
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
@@ -25,44 +24,24 @@ $this->params['breadcrumbs'][] = $this->title;
                 'class' => '\kartik\grid\CheckboxColumn',
                 'rowSelectedClass' => GridView::TYPE_INFO
             ],
+
             'id',
-            'field_name',
-            'name',
-            'min',
-            'max',
-            [
-                'class' => '\kartik\grid\DataColumn',
-                'attribute' => 'by_number',
-                'filterType' => GridView::FILTER_SELECT2,
-                'filterWidgetOptions' => [
-                    'data' => SpecField::getByNumOptions(),
-                    'options' => [
-                        'prompt' => Yii::t('common', 'Please Select...'),
-                    ],
-                ],
-                'value' => function ($model, $key, $index, $column) {
-                    return SpecField::getByNumOptions($model->by_number);
-                }
-            ],
-            [
-                'class' => '\kartik\grid\DataColumn',
-                'attribute' => 'status',
-                'filterType' => GridView::FILTER_SELECT2,
-                'filterWidgetOptions' => [
-                    'data' => SpecField::getStatusOptions(),
-                    'options' => [
-                        'prompt' => Yii::t('common', 'Please Select...'),
-                    ],
-                ],
-                'value' => function ($model, $key, $index, $column) {
-                    return SpecField::getStatusOptions($model->status);
-                }
-            ],
-            'sort',
+            'pid',
+            'region_name',
+            'transport_type',
+            'depart_limitation',
+            // 'transport_limitation',
+            // 'pickup_limitation',
+            // 'status',
+            // 'sort',
             // 'created_by',
             // 'created_at',
             // 'updated_by',
             // 'updated_at',
+            // 'first',
+            // 'suibian1',
+            // 'ss',
+            // 'sss',
 
             [
                 'class' => '\kartik\grid\ActionColumn',
