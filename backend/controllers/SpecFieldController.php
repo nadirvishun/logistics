@@ -89,20 +89,23 @@ class SpecFieldController extends BaseController
 //        print_r(Yii::$app->db->getTableSchema(self::REGION_PRICE_TABLE));exit;
         $model = new SpecField();
         //
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        if ($model->load(Yii::$app->request->post())) {
             //mysql中的ddl操作对回滚来说没用，所以事务不起作用
-            try {
-                //创建region_price表中字段，尽量先创建，如果出错直接终止了
-                Yii::$app->db->createCommand()
-                    ->addColumn(self::REGION_PRICE_TABLE,
-                        $model->field_name,
-                        $this->decimal(10, 2)->notNull()->comment($model->name))
-                    ->execute();
-                //保存自身，由于上面已经验证了，所以这里就不验证了
-                $model->save(false);
-                return $this->redirectSuccess(['index'], Yii::t('common', 'Create Success'));
-            } catch (\Exception $e) {
-                return $this->redirectError(['create'], '创建失败,可能是字段重复，请核对后再创建');
+            if($model->save()) {//如果保存成功
+                $id=$model->id;
+                try {
+                    //创建region_price表中字段，尽量先创建，如果出错直接终止了
+                    Yii::$app->db->createCommand()
+                        ->addColumn(self::REGION_PRICE_TABLE,
+                            $model->field_name,
+                            $this->decimal(10, 2)->notNull()->comment($model->name))
+                        ->execute();
+                    return $this->redirectSuccess(['index'], Yii::t('common', 'Create Success'));
+                } catch (\Exception $e) {
+                    //如果新增字段失败，手动将本身刚写入的数据删除掉
+                    $this->findModel($id)->delete();
+                    return $this->redirectError(['create'], '创建失败,可能是字段重复，请核对后再创建');
+                }
             }
         }
         //获取默认状态
