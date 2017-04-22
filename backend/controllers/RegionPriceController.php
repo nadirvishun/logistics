@@ -2,10 +2,14 @@
 
 namespace backend\controllers;
 
+use backend\models\SpecField;
+use kartik\grid\GridView;
 use Yii;
 use backend\models\RegionPrice;
 use backend\models\search\RegionPriceSearch;
 use backend\controllers\BaseController;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -47,10 +51,75 @@ class RegionPriceController extends BaseController
     {
         $searchModel = new RegionPriceSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+        //在controller中组装gridView中展示的列
+        $gridColumns = [
+            [
+                'class' => '\kartik\grid\CheckboxColumn',
+                'rowSelectedClass' => GridView::TYPE_INFO
+            ],
+            'id',
+            'region_name'
+        ];
+        $dynamic = SpecField::getFieldNameOptions();
+        $specialFields = array_keys($dynamic);
+        if (!empty($specialFields)) {
+            foreach ($specialFields as $value) {
+                $gridColumns[] = [
+                    'class' => 'kartik\grid\EditableColumn',
+                    'attribute' => $value,
+                ];
+            }
+        }
+        $otherColumns = [
+            'transport_type',
+            'depart_limitation',
+            'transport_limitation',
+            'pickup_limitation',
+            'status',
+            'sort',
+            [
+                'class' => '\kartik\grid\ActionColumn',
+                'header' => Yii::t('common', 'Actions'),
+                'vAlign' => 'middle',
+                'template' => '{view} {update} {delete}',
+                'buttons' => [
+                    'view' => function ($url, $model, $key) {
+                        $options = [
+                            'title' => Yii::t('common', 'view'),
+                            'aria-label' => Yii::t('common', 'view'),
+                            'data-pjax' => '0',
+                            'class' => 'btn btn-xs btn-info'
+                        ];
+                        return Html::a('<i class="fa fa-fw fa-eye"></i>', ['view', 'id' => $model->id], $options);
+                    },
+                    'update' => function ($url, $model, $key) {
+                        $options = [
+                            'title' => Yii::t('common', 'update'),
+                            'aria-label' => Yii::t('common', 'update'),
+                            'data-pjax' => '0',
+                            'class' => 'btn btn-xs btn-warning'
+                        ];
+                        return Html::a('<i class="fa fa-fw fa-pencil"></i>', ['update', 'id' => $model->id], $options);
+                    },
+                    'delete' => function ($url, $model, $key) {
+                        $options = [
+                            'title' => Yii::t('common', 'delete'),
+                            'aria-label' => Yii::t('common', 'delete'),
+                            'data-pjax' => '0',
+                            'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                            'data-method' => 'post',
+                            'class' => 'btn btn-xs btn-danger'
+                        ];
+                        return Html::a('<i class="fa fa-fw fa-trash"></i>', ['delete', 'id' => $model->id], $options);
+                    }
+                ],
+            ]
+        ];
+        $gridColumns = ArrayHelper::merge($gridColumns, $otherColumns);
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'gridColumns' => $gridColumns
         ]);
     }
 

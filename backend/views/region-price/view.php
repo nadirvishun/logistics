@@ -32,10 +32,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'created_at',
                 'updated_by',
                 'updated_at',
-                'first',
-                'suibian1',
-                'ss',
-                'sss',
+//                'first',
+//                'suibian1',
+//                'ss',
+//                'sss',
             ],
         ]) ?>
         <p style="margin-top:10px">

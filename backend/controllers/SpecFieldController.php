@@ -7,6 +7,7 @@ use Yii;
 use backend\models\SpecField;
 use backend\models\search\SpecFieldSearch;
 use yii\db\SchemaBuilderTrait;
+use yii\helpers\Json;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -60,7 +61,41 @@ class SpecFieldController extends BaseController
     {
         $searchModel = new SpecFieldSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+        if (Yii::$app->request->post('hasEditable')) {
+            $id = Yii::$app->request->post('editableKey');
+            $model = SpecField::findOne($id);
+            $out = Json::encode(['output' => '', 'message' => '']);
+            //由于传递的SpecField是二维数组，将其转为一维
+            $posted = current(Yii::$app->request->post('SpecField'));
+            $post = ['SpecField' => $posted];
+            if ($model->load($post) && $model->validate()) {
+                $output = '';
+//                //验证最小值必须小于最大值
+                if (isset($posted['min'])) {
+                    if ($posted['min'] >= $model->max) {
+                        $message = '最小值必须小于最大值';
+                        $model->addError('min', $message);
+                        $out = Json::encode(['output' => $output, 'message' => $message]);
+                    }
+                } elseif (isset($posted['max'])) {
+                    $message = '最大值必须大于最小值';
+                    if ($posted['max'] <= $model->min) {
+                        $model->addError('max', $message);
+                        $out = Json::encode(['output' => $output, 'message' => $message]);
+                    }
+                }
+                if (!$model->hasErrors() && $model->save(false)) {
+                    if (isset($posted['min'])) {
+                        $output = Yii::$app->formatter->asDecimal($model->min, 3);
+                    } elseif (isset($posted['max'])) {
+                        $output = Yii::$app->formatter->asDecimal($model->max, 3);
+                    }
+                    $out = Json::encode(['output' => $output, 'message' => '']);
+                }
+            }
+            echo $out;
+            exit;
+        }
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -125,7 +160,7 @@ class SpecFieldController extends BaseController
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
+        $model->scenario = 'update';
         if ($model->load(Yii::$app->request->post())) {
             //先判定field_name有效性（排除原有自身的情况下，不能与其它字段重复）
             $regionPriceFields = array_keys(Yii::$app->db->getTableSchema(RegionPrice::tableName())->columns);
@@ -134,7 +169,7 @@ class SpecFieldController extends BaseController
                     continue;
                 }
                 if ($model->field_name == $value) {//如果新值与字段重复，则不能修改
-                    $model->addError('field_name', '名称已存在，请重新选择名称');
+                    $model->addError('field_name', '字段名称已存在，请重新选择名称');
                     break;
                 }
             }

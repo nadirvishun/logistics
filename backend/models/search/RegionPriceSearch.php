@@ -2,6 +2,7 @@
 
 namespace backend\models\search;
 
+use backend\models\SpecField;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -20,7 +21,8 @@ class RegionPriceSearch extends RegionPrice
         return [
             [['id', 'pid', 'transport_type', 'status', 'sort', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
             [['region_name'], 'safe'],
-            [['depart_limitation', 'transport_limitation', 'pickup_limitation', 'first', 'suibian1', 'ss', 'sss'], 'number'],
+            [['depart_limitation', 'transport_limitation', 'pickup_limitation'], 'number'],
+            [array_keys(SpecField::getFieldNameOptions()),'number']//增加动态规格验证
         ];
     }
 
@@ -48,10 +50,10 @@ class RegionPriceSearch extends RegionPrice
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            //'pagination' => [
-                //'pageSize' => 20,
-            //],
-            //'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+            'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
         ]);
 
         $this->load($params);
@@ -76,11 +78,17 @@ class RegionPriceSearch extends RegionPrice
             'created_at' => $this->created_at,
             'updated_by' => $this->updated_by,
             'updated_at' => $this->updated_at,
-            'first' => $this->first,
-            'suibian1' => $this->suibian1,
-            'ss' => $this->ss,
-            'sss' => $this->sss,
         ]);
+        //增加动态的检索
+        $dynamic = SpecField::getFieldNameOptions();
+        $add = array_keys($dynamic);
+        if (!empty($add)) {
+            $condition = [];
+            foreach ($add as $value) {
+                $condition[$value] = $this->$value;
+            }
+            $query->andFilterWhere($condition);
+        }
 
         $query->andFilterWhere(['like', 'region_name', $this->region_name]);
 

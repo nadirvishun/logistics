@@ -19,68 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'pjax' => true,
         'hover' => true,
         'filterModel' => $searchModel,
-        'columns' => [
-            [
-                'class' => '\kartik\grid\CheckboxColumn',
-                'rowSelectedClass' => GridView::TYPE_INFO
-            ],
-
-            'id',
-            'pid',
-            'region_name',
-            'transport_type',
-            'depart_limitation',
-            // 'transport_limitation',
-            // 'pickup_limitation',
-            // 'status',
-            // 'sort',
-            // 'created_by',
-            // 'created_at',
-            // 'updated_by',
-            // 'updated_at',
-            // 'first',
-            // 'suibian1',
-            // 'ss',
-            // 'sss',
-
-            [
-                'class' => '\kartik\grid\ActionColumn',
-                'header' => Yii::t('common', 'Actions'),
-                'vAlign' => 'middle',
-                'template' => '{view} {update} {delete}',
-                'buttons' => [
-                    'view' => function ($url, $model, $key) {
-                        $options = [
-                            'title' => Yii::t('common', 'view'),
-                            'aria-label' => Yii::t('common', 'view'),
-                            'data-pjax' => '0',
-                            'class' => 'btn btn-xs btn-info'
-                        ];
-                        return Html::a('<i class="fa fa-fw fa-eye"></i>', ['view', 'id' => $model->id], $options);
-                    },
-                    'update' => function ($url, $model, $key) {
-                        $options = [
-                            'title' => Yii::t('common', 'update'),
-                            'aria-label' => Yii::t('common', 'update'),
-                            'data-pjax' => '0',
-                            'class' => 'btn btn-xs btn-warning'
-                        ];
-                        return Html::a('<i class="fa fa-fw fa-pencil"></i>', ['update', 'id' => $model->id], $options);
-                    },
-                    'delete' => function ($url, $model, $key) {
-                        $options = [
-                            'title' => Yii::t('common', 'delete'),
-                            'aria-label' => Yii::t('common', 'delete'),
-                            'data-pjax' => '0',
-                            'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                            'data-method' => 'post',
-                            'class' => 'btn btn-xs btn-danger'
-                        ];
-                        return Html::a('<i class="fa fa-fw fa-trash"></i>', ['delete', 'id' => $model->id], $options);
-                    }
-                ],
-            ]
-        ],
+        'columns' => $gridColumns,
         'panel' => [
             'heading' => false,
             'before' => '<div class="box-header pull-left">

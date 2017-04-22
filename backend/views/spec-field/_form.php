@@ -22,9 +22,15 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'min', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'min', ['options' => ['class' => 'form-group c-md-5']])
+        ->textInput(['maxlength' => true])
+        ->hint('保留小数点后三位小数')
+    ?>
 
-    <?= $form->field($model, 'max', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'max', ['options' => ['class' => 'form-group c-md-5']])
+        ->textInput(['maxlength' => true])
+        ->hint('保留小数点后三位小数')
+    ?>
 
     <?= $form->field($model, 'by_number', ['options' => ['class' => 'form-group c-md-5']])->widget(SwitchInput::classname(), ['pluginOptions' => ['size' => 'small']]) ?>
 

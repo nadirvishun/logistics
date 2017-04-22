@@ -69,7 +69,9 @@ class SpecField extends \yii\db\ActiveRecord
                 'range' => array_keys(Yii::$app->db->getTableSchema(RegionPrice::tableName())->columns),
                 'on' => 'insert'
             ],
-            [['min', 'max'], 'number'],
+            [['min', 'max'], 'number', 'min' => 0],
+            //最小值小于最大值，只有在更新时验证
+            ['min', 'compare', 'compareAttribute' => 'max', 'operator' => '<', 'type' => 'number', 'on' => ['insert', 'update']],
             [['by_number', 'status', 'sort', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
             [['field_name', 'name'], 'string', 'max' => 50],
             [['created_by', 'created_at', 'updated_by', 'updated_at'], 'safe']

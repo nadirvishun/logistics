@@ -28,8 +28,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'field_name',
             'name',
-            'min',
-            'max',
+            [
+                'class' => 'kartik\grid\EditableColumn',
+                'attribute' => 'min',
+            ],
+            [
+                'class' => 'kartik\grid\EditableColumn',
+                'attribute' => 'max',
+            ],
             [
                 'class' => '\kartik\grid\DataColumn',
                 'attribute' => 'by_number',

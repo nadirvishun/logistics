@@ -39,11 +39,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'updated_at', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'first', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) ?>
+<!--    <?/*= $form->field($model, 'first', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) */?>
 
-    <?= $form->field($model, 'suibian1', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) ?>
+    <?/*= $form->field($model, 'suibian1', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) */?>
 
-    <?= $form->field($model, 'sss', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) ?>
+    --><?/*= $form->field($model, 'sss', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) */?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('common','create') : Yii::t('common','update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-warning']) ?>
