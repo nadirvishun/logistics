@@ -69,13 +69,59 @@ class SpecField extends \yii\db\ActiveRecord
                 'range' => array_keys(Yii::$app->db->getTableSchema(RegionPrice::tableName())->columns),
                 'on' => 'insert'
             ],
+            //更新时同样不能重复，适用于更新时验证
+            ['field_name', 'validateFieldName', 'on' => 'update'],
             [['min', 'max'], 'number', 'min' => 0],
-            //最小值小于最大值，只有在更新时验证
-            ['min', 'compare', 'compareAttribute' => 'max', 'operator' => '<', 'type' => 'number', 'on' => ['insert', 'update']],
+            //当index视图中直接编辑时需要验证
+            ['min', 'validateMin', 'on' => 'editable'],
+            ['max', 'validateMax', 'on' => 'editable'],
+            //最小值小于最大值，只有在更新时验证，需注意type必须为number，否则按照字符串来比较
+            ['min', 'compare',
+                'compareAttribute' => 'max',
+                'operator' => '<',
+                'type' => 'number',
+                'on' => ['insert', 'update']
+            ],
             [['by_number', 'status', 'sort', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
             [['field_name', 'name'], 'string', 'max' => 50],
-            [['created_by', 'created_at', 'updated_by', 'updated_at'], 'safe']
+            [['created_by', 'created_at', 'updated_by', 'updated_at'], 'safe'],
         ];
+    }
+
+    /**
+     * 更新字段名时不能与region_price表中字段重复
+     * 同时需要排除自身原有的
+     */
+    public function validateFieldName()
+    {
+        //先判定传递的值是否有变动，没有变动则直接不验证
+        if ($this->isAttributeChanged('field_name', false)) {
+            //如果有变动，则判定新的字段是否在region_price表中已存在
+            $regionPriceFields = array_keys(Yii::$app->db->getTableSchema(RegionPrice::tableName())->columns);
+            if (in_array($this->field_name, $regionPriceFields)) {
+                $this->addError('field_name', '字段名称已存在，请重新选择名称');
+            }
+        }
+    }
+
+    /**
+     * 直接编辑时由于只传递一个值，所以只能这样验证
+     */
+    public function validateMin()
+    {
+        if ($this->min >= $this->max) {
+            $this->addError('min', '最小值必须小于最大值');
+        }
+    }
+
+    /**
+     * 接编辑时由于只传递一个值，所以只能这样验证
+     */
+    public function validateMax()
+    {
+        if ($this->min >= $this->max) {
+            $this->addError('max', '最大值必须大于最小值');
+        }
     }
 
     /**
@@ -121,29 +167,29 @@ class SpecField extends \yii\db\ActiveRecord
 
     /**
      *  获取下拉菜单列表或者某一名称
-     * @param bool $status
+     * @param bool $key
      * @return array|mixed
      */
-    public static function getStatusOptions($status = false)
+    public static function getStatusOptions($key = false)
     {
-        $status_array = [
+        $arr = [
             self::STATUS_NO => '隐藏',
             self::STATUS_YES => '显示'
         ];
-        return $status === false ? $status_array : ArrayHelper::getValue($status_array, $status, Yii::t('common', 'Unknown'));
+        return $key === false ? $arr : ArrayHelper::getValue($arr, $key, Yii::t('common', 'Unknown'));
     }
 
     /**
      *  获取下拉菜单列表或者某一名称
-     * @param bool $str
+     * @param bool $key
      * @return array|mixed
      */
-    public static function getByNumOptions($str = false)
+    public static function getByNumOptions($key = false)
     {
-        $str_array = [
+        $arr = [
             self::BY_NUM_NO => '否',
             self::BY_NUM_YES => '是'
         ];
-        return $str === false ? $str_array : ArrayHelper::getValue($str_array, $str, Yii::t('common', 'Unknown'));
+        return $key === false ? $arr : ArrayHelper::getValue($arr, $key, Yii::t('common', 'Unknown'));
     }
 }

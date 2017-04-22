@@ -8,6 +8,7 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model backend\models\BackendMenu */
 /* @var $form yii\widgets\ActiveForm */
+/* @var $treeOptions backend\controllers\BackendMenuController*/
 ?>
 
 <div class="backend-menu-form">
@@ -17,7 +18,8 @@ use yii\widgets\ActiveForm;
         'options' => ['class' => 'box-body']
     ]); ?>
 
-    <?= $form->field($model, 'pid', ['options' => ['class' => 'form-group c-md-5']])->widget(Select2::classname(), [
+    <?=
+    $form->field($model, 'pid', ['options' => ['class' => 'form-group c-md-5']])->widget(Select2::classname(), [
         'data' => $treeOptions,
         'options' => [
             'prompt' => Yii::t('common', 'Please Select...'),

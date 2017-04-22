@@ -10,7 +10,7 @@ namespace common\components;
 
 use yii\helpers\ArrayHelper;
 
-class Tree
+class Tree2
 {
     /**
      * 图标

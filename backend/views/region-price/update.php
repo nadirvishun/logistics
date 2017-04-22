@@ -4,6 +4,7 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\RegionPrice */
+/* @var $specialFields backend\controllers\RegionPriceController*/
 
 $this->title = '更新地区价格';
 $this->params['breadcrumbs'][] = ['label' => '地区价格', 'url' => ['index']];
@@ -16,5 +17,6 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
     <?= $this->render('_form', [
         'model' => $model,
+        'specialFields'=>$specialFields
     ]) ?>
 </div>

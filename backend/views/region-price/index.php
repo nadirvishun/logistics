@@ -6,15 +6,17 @@ use yii\widgets\Pjax;
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\search\RegionPriceSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $gridColumns backend\controllers\RegionPriceController*/
 
-$this->title = 'Region Prices';
+$this->title = '地区价格';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="region-price-index grid-view box box-primary">
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <?= GridView::widget([
+    <?=
+    GridView::widget([
         'dataProvider' => $dataProvider,
         'pjax' => true,
         'hover' => true,

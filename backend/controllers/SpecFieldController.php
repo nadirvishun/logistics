@@ -62,44 +62,31 @@ class SpecFieldController extends BaseController
         $searchModel = new SpecFieldSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         if (Yii::$app->request->post('hasEditable')) {
-            $id = Yii::$app->request->post('editableKey');
+            $id = Yii::$app->request->post('editableKey');//获取ID
             $model = SpecField::findOne($id);
-            $out = Json::encode(['output' => '', 'message' => '']);
+            $model->scenario = 'editable';
             //由于传递的SpecField是二维数组，将其转为一维
+            $attribute = Yii::$app->request->post('editableAttribute');//获取名称
             $posted = current(Yii::$app->request->post('SpecField'));
             $post = ['SpecField' => $posted];
-            if ($model->load($post) && $model->validate()) {
-                $output = '';
-//                //验证最小值必须小于最大值
-                if (isset($posted['min'])) {
-                    if ($posted['min'] >= $model->max) {
-                        $message = '最小值必须小于最大值';
-                        $model->addError('min', $message);
-                        $out = Json::encode(['output' => $output, 'message' => $message]);
-                    }
-                } elseif (isset($posted['max'])) {
-                    $message = '最大值必须大于最小值';
-                    if ($posted['max'] <= $model->min) {
-                        $model->addError('max', $message);
-                        $out = Json::encode(['output' => $output, 'message' => $message]);
-                    }
-                }
-                if (!$model->hasErrors() && $model->save(false)) {
-                    if (isset($posted['min'])) {
-                        $output = Yii::$app->formatter->asDecimal($model->min, 3);
-                    } elseif (isset($posted['max'])) {
-                        $output = Yii::$app->formatter->asDecimal($model->max, 3);
-                    }
-                    $out = Json::encode(['output' => $output, 'message' => '']);
-                }
+            $output = '';
+            $message = '';
+            if ($model->load($post) && $model->save()) {
+                //展示时以小数格式展示，即便输入3，展示时也会是3.000
+                $output = Yii::$app->formatter->asDecimal($model->$attribute, 3);
+            } else {
+                //由于本插件不会自动捕捉model的error，所以需要放在$message中展示出来
+                $message = $model->getFirstError($attribute);
             }
+            $out = Json::encode(['output' => $output, 'message' => $message]);
             echo $out;
             exit;
+        } else {
+            return $this->render('index', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]);
         }
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
     }
 
     /**
@@ -107,7 +94,8 @@ class SpecFieldController extends BaseController
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id)
+    public
+    function actionView($id)
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
@@ -119,7 +107,8 @@ class SpecFieldController extends BaseController
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public
+    function actionCreate()
     {
         $model = new SpecField();
         $model->scenario = 'insert';
@@ -157,41 +146,29 @@ class SpecFieldController extends BaseController
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+    public
+    function actionUpdate($id)
     {
         $model = $this->findModel($id);
         $model->scenario = 'update';
-        if ($model->load(Yii::$app->request->post())) {
-            //先判定field_name有效性（排除原有自身的情况下，不能与其它字段重复）
-            $regionPriceFields = array_keys(Yii::$app->db->getTableSchema(RegionPrice::tableName())->columns);
-            foreach ($regionPriceFields as $key => $value) {
-                if ($model->getOldAttribute('field_name') == $value) {//不和原值比较
-                    continue;
-                }
-                if ($model->field_name == $value) {//如果新值与字段重复，则不能修改
-                    $model->addError('field_name', '字段名称已存在，请重新选择名称');
-                    break;
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            //如果字段名字发生变动，则修改表字段名称，只判定field_name即可，其余的无需修改
+            if ($model->isAttributeChanged('field_name')) {//如果有修改
+                try {
+                    //修改region_price表中字段
+                    Yii::$app->db->createCommand()
+                        ->renameColumn(RegionPrice::tableName(),
+                            $model->getOldAttribute('field_name'),
+                            $model->field_name)
+                        ->execute();
+                } catch (\Exception $e) {
+                    //如果修改字段失败，提示错误
+                    return $this->redirectError(['create'], '修改失败');
                 }
             }
-            if (!$model->hasErrors() && $model->validate()) {
-                //如果字段名字发生变动，则修改表字段名称，只判定field_name即可，其余的无需修改
-                if ($model->isAttributeChanged('field_name')) {//如果有修改
-                    try {
-                        //修改region_price表中字段
-                        Yii::$app->db->createCommand()
-                            ->renameColumn(RegionPrice::tableName(),
-                                $model->getOldAttribute('field_name'),
-                                $model->field_name)
-                            ->execute();
-                    } catch (\Exception $e) {
-                        //如果修改字段失败，提示错误
-                        return $this->redirectError(['create'], '修改失败');
-                    }
-                }
-                //上面先进行验证,以免验证出错，保存时就不需要验证了
-                $model->save(false);
-                return $this->redirectSuccess(['index'], Yii::t('common', 'Update Success'));
-            }
+            //上面先进行验证,以免验证出错，保存时就不需要验证了
+            $model->save(false);
+            return $this->redirectSuccess(['index'], Yii::t('common', 'Update Success'));
         }
         return $this->render('update', [
             'model' => $model,
@@ -205,7 +182,8 @@ class SpecFieldController extends BaseController
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id)
+    public
+    function actionDelete($id)
     {
         $model = $this->findModel($id);
         //先删除region_price表中字段，然后在删除自身
@@ -230,7 +208,8 @@ class SpecFieldController extends BaseController
      * @return SpecField the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected
+    function findModel($id)
     {
         if (($model = SpecField::findOne($id)) !== null) {
             return $model;

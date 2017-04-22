@@ -34,6 +34,11 @@ class m170417_135512_create_region_price_table extends Migration
             'updated_by' => $this->integer()->unsigned()->notNull()->comment('更新人'),
             'updated_at' => $this->bigInteger()->unsigned()->notNull()->comment('更新时间')
         ], $tableOptions);
+
+        $this->insert(self::TBL_NAME, [
+            'pid' => 0,
+            'region_name' => '福建省',
+        ]);
     }
 
     /**

@@ -71,11 +71,37 @@ class RegionPriceController extends BaseController
             }
         }
         $otherColumns = [
-            'transport_type',
-            'depart_limitation',
-            'transport_limitation',
-            'pickup_limitation',
-            'status',
+            [
+                'class' => '\kartik\grid\DataColumn',
+                'attribute' => 'transport_type',
+                'filterType' => GridView::FILTER_SELECT2,
+                'filterWidgetOptions' => [
+                    'data' => RegionPrice::getTransportType(),
+                    'options' => [
+                        'prompt' => Yii::t('common', 'Please Select...'),
+                    ],
+                ],
+                'value' => function ($model, $key, $index, $column) {
+                    return RegionPrice::getTransportType($model->transport_type);
+                }
+            ],
+//            'depart_limitation',
+//            'transport_limitation',
+//            'pickup_limitation',
+            [
+                'class' => '\kartik\grid\DataColumn',
+                'attribute' => 'status',
+                'filterType' => GridView::FILTER_SELECT2,
+                'filterWidgetOptions' => [
+                    'data' => RegionPrice::getStatusOptions(),
+                    'options' => [
+                        'prompt' => Yii::t('common', 'Please Select...'),
+                    ],
+                ],
+                'value' => function ($model, $key, $index, $column) {
+                    return RegionPrice::getStatusOptions($model->status);
+                }
+            ],
             'sort',
             [
                 'class' => '\kartik\grid\ActionColumn',
@@ -143,14 +169,15 @@ class RegionPriceController extends BaseController
     public function actionCreate()
     {
         $model = new RegionPrice();
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            //return $this->redirect(['view', 'id' => $model->id]);
             return $this->redirectSuccess(['index'], Yii::t('common', 'Create Success'));
         } else {
             $model->loadDefaultValues();
+            $dynamic = SpecField::getFieldNameOptions();
+            $specialFields = array_keys($dynamic);
             return $this->render('create', [
                 'model' => $model,
+                'specialFields' => $specialFields
             ]);
         }
     }
@@ -166,11 +193,13 @@ class RegionPriceController extends BaseController
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            //return $this->redirect(['view', 'id' => $model->id]);
             return $this->redirectSuccess(['index'], Yii::t('common', 'Update Success'));
         } else {
+            $dynamic = SpecField::getFieldNameOptions();
+            $specialFields = array_keys($dynamic);
             return $this->render('update', [
                 'model' => $model,
+                'specialFields' => $specialFields
             ]);
         }
     }

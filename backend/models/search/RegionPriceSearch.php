@@ -22,7 +22,7 @@ class RegionPriceSearch extends RegionPrice
             [['id', 'pid', 'transport_type', 'status', 'sort', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
             [['region_name'], 'safe'],
             [['depart_limitation', 'transport_limitation', 'pickup_limitation'], 'number'],
-            [array_keys(SpecField::getFieldNameOptions()),'number']//增加动态规格验证
+            [array_keys(SpecField::getFieldNameOptions()), 'number']//增加动态规格验证
         ];
     }
 
@@ -53,7 +53,7 @@ class RegionPriceSearch extends RegionPrice
             'pagination' => [
                 'pageSize' => 20,
             ],
-            'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
+            'sort' => ['defaultOrder' => ['sort' => SORT_DESC, 'id' => SORT_ASC]]
         ]);
 
         $this->load($params);
@@ -63,11 +63,12 @@ class RegionPriceSearch extends RegionPrice
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        //设置只取非顶级的
+        $query->andFilterWhere(['!=', 'pid', 0]);
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'pid' => $this->pid,
+//            'pid' => $this->pid,
             'transport_type' => $this->transport_type,
             'depart_limitation' => $this->depart_limitation,
             'transport_limitation' => $this->transport_limitation,

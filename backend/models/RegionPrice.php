@@ -32,6 +32,8 @@ class RegionPrice extends \yii\db\ActiveRecord
 {
     const STATUS_YES = 1;//显示
     const STATUS_NO = 0;//隐藏
+    const TYPE_DIRECT = 1;//直达
+    const TYPE_TRANSFER = 2;//中转
 
     /**
      * @inheritdoc
@@ -58,7 +60,7 @@ class RegionPrice extends \yii\db\ActiveRecord
     public function rules()
     {
         $org = [
-            [['pid', 'region_name', 'transport_type', 'depart_limitation', 'transport_limitation', 'pickup_limitation'], 'required'],
+            [['pid', 'region_name', 'transport_type'], 'required'],
             [['pid', 'transport_type', 'status', 'sort', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
             [['depart_limitation', 'transport_limitation', 'pickup_limitation'], 'number'],
             [['region_name'], 'string', 'max' => 50],
@@ -83,7 +85,7 @@ class RegionPrice extends \yii\db\ActiveRecord
 
         $org = [
             'id' => '地区ID',
-            'pid' => '地区父ID',
+            'pid' => '上级地区',
             'region_name' => '地区名称',
             'transport_type' => '运输方式',
             'depart_limitation' => '发车时效',
@@ -105,15 +107,51 @@ class RegionPrice extends \yii\db\ActiveRecord
 
     /**
      *  获取下拉菜单列表或者某一名称
-     * @param bool $status
+     * @param bool $key
      * @return array|mixed
      */
-    public static function getStatusOptions($status = false)
+    public static function getStatusOptions($key = false)
     {
-        $status_array = [
+        $arr = [
             self::STATUS_NO => '隐藏',
             self::STATUS_YES => '显示'
         ];
-        return $status === false ? $status_array : ArrayHelper::getValue($status_array, $status, Yii::t('common', 'Unknown'));
+        return $key === false ? $arr : ArrayHelper::getValue($arr, $key, Yii::t('common', 'Unknown'));
+    }
+
+    /**
+     *  获取运输方式的方法
+     * @param bool $key
+     * @return array|mixed
+     */
+    public static function getTransportType($key = false)
+    {
+        $arr = [
+            self::TYPE_DIRECT => '直达',
+            self::TYPE_TRANSFER => '中转'
+        ];
+        return $key === false ? $arr : ArrayHelper::getValue($arr, $key, Yii::t('common', 'Unknown'));
+    }
+
+    /**
+     * 获取顶级的省份
+     * 目前只有福建省，后续扩展时可能用到
+     * @param bool $key
+     * @return array|mixed
+     */
+    public static function getRootOptions($key = false)
+    {
+        $list = static::find()
+            ->select(['id', 'region_name'])
+            ->where(['pid' => 0])
+            ->asArray()
+            ->all();
+        $arr = [];
+        if (!empty($list)) {
+            foreach ($list as $value) {
+                $arr[$value['id']] = $value['region_name'];
+            }
+        }
+        return $key === false ? $arr : ArrayHelper::getValue($arr, $key, Yii::t('common', 'Unknown'));
     }
 }

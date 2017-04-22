@@ -31,6 +31,8 @@ class m170418_085248_create_pre_order_table extends Migration
             'goods_weight' => $this->decimal(10, 3)->notNull()->comment('货物重量'),
             'goods_volume' => $this->decimal(10, 3)->notNull()->comment('货物体积'),
             'goods_number' => $this->integer()->notNull()->comment('货物数量'),
+            'spec_field'=>$this->string(50)->notNull()->comment('查询出来的对应的区间字段名'),
+            'spec_field_name'=>$this->string(50)->notNull()->comment('查询出来的对应的区间名称'),
             'estimate_price' => $this->decimal(10, 2)->notNull()->comment('估算价格'),
             'remark' => $this->string()->notNull()->comment('备注'),
             'is_view' => $this->boolean()->notNull()->comment('是否已查看，0未查看，1已查看'),
