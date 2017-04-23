@@ -24,13 +24,25 @@ $this->params['breadcrumbs'][] = $this->title;
                 'name',
                 'min',
                 'max',
-                'by_number',
-                'status',
                 'sort',
-                'created_by',
-                'created_at',
-                'updated_by',
-                'updated_at',
+                [
+                    'label' => $model->getAttributeLabel('by_number'),
+                    'value' => \backend\models\SpecField::getByNumOptions($model->by_number)
+                ],
+                [
+                    'label' => $model->getAttributeLabel('status'),
+                    'value' => \backend\models\SpecField::getStatusOptions($model->status)
+                ],
+                [
+                    'label' => $model->getAttributeLabel('created_by'),
+                    'value' => \backend\models\Admin::getUsernameById($model->created_by)
+                ],
+                'created_at:datetime',
+                [
+                    'label' => $model->getAttributeLabel('updated_by'),
+                    'value' => \backend\models\Admin::getUsernameById($model->updated_by)
+                ],
+                'updated_at:datetime',
             ],
         ]) ?>
         <p style="margin-top:10px">

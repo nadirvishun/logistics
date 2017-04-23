@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\models\Admin;
 use backend\models\SpecField;
 use kartik\grid\GridView;
 use Yii;
@@ -51,7 +52,8 @@ class RegionPriceController extends BaseController
     {
         $searchModel = new RegionPriceSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        //在controller中组装gridView中展示的列
+        //由于在视图中不好规划展示顺序，所以在controller中组装gridView中展示的列
+        //开始的一部分
         $gridColumns = [
             [
                 'class' => '\kartik\grid\CheckboxColumn',
@@ -60,6 +62,7 @@ class RegionPriceController extends BaseController
             'id',
             'region_name'
         ];
+        //动态的内容放到中间
         $dynamic = SpecField::getFieldNameOptions();
         $specialFields = array_keys($dynamic);
         if (!empty($specialFields)) {
@@ -70,6 +73,7 @@ class RegionPriceController extends BaseController
                 ];
             }
         }
+        //再加上后半部分
         $otherColumns = [
             [
                 'class' => '\kartik\grid\DataColumn',
@@ -156,8 +160,54 @@ class RegionPriceController extends BaseController
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+        //由于在视图中不好规划展示顺序，所以在这里规划好
+        //开始的一部分
+        $attributes = [
+            'id',
+            [
+                'label' => $model->getAttributeLabel('pid'),
+                'value' => RegionPrice::getRegionNameById($model->pid)
+            ],
+            'region_name',
+            [
+                'label' => $model->getAttributeLabel('transport_type'),
+                'value' => RegionPrice::getTransportType($model->transport_type)
+            ],
+        ];
+        //动态的内容放到中间
+        $dynamic = SpecField::getFieldNameOptions();
+        $specialFields = array_keys($dynamic);
+        if (!empty($specialFields)) {
+            foreach ($specialFields as $value) {
+                $attributes[] = $value;
+            }
+        }
+        //再加上后半部分
+        $otherAttributes = [
+            'depart_limitation',
+            'transport_limitation',
+            'pickup_limitation',
+            'sort',
+            [
+                'label' => $model->getAttributeLabel('status'),
+                'value' => RegionPrice::getStatusOptions($model->status)
+            ],
+            [
+                'label' => $model->getAttributeLabel('created_by'),
+                'value' => Admin::getUsernameById($model->created_by)
+            ],
+            'created_at:datetime',
+            [
+                'label' => $model->getAttributeLabel('updated_by'),
+                'value' => Admin::getUsernameById($model->updated_by)
+            ],
+            'updated_at:datetime',
+        ];
+        $attributes = ArrayHelper::merge($attributes, $otherAttributes);
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'attributes' => $attributes
         ]);
     }
 

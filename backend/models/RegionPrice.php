@@ -60,6 +60,8 @@ class RegionPrice extends \yii\db\ActiveRecord
     public function rules()
     {
         $org = [
+            //设定默认的值，否则不填写时为null，写入数据库时与not null冲突
+            [['depart_limitation', 'transport_limitation', 'pickup_limitation', 'sort'], 'default', 'value' => 0],
             [['pid', 'region_name', 'transport_type'], 'required'],
             [['pid', 'transport_type', 'status', 'sort', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
             [['depart_limitation', 'transport_limitation', 'pickup_limitation'], 'number'],
@@ -153,5 +155,16 @@ class RegionPrice extends \yii\db\ActiveRecord
             }
         }
         return $key === false ? $arr : ArrayHelper::getValue($arr, $key, Yii::t('common', 'Unknown'));
+    }
+
+    /**
+     * 根据ID获取地区名称
+     * @param $id
+     * @return string
+     */
+    public static function getRegionNameById($id)
+    {
+        $info = static::findOne($id);
+        return empty($info['region_name']) ? Yii::t('common', 'Unknown') : $info['region_name'];
     }
 }

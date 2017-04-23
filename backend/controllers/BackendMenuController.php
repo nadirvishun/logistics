@@ -69,12 +69,12 @@ class BackendMenuController extends BaseController
      * @param string $id
      * @return mixed
      */
-    public function actionView($id)
+    /*public function actionView($id)
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
-    }
+    }*/
 
     /**
      * Creates a new BackendMenu model.
@@ -171,7 +171,7 @@ class BackendMenuController extends BaseController
      * @param $target
      * @param $position
      */
-    function actionMove($id, $target, $position)
+  /*  function actionMove($id, $target, $position)
     {
         $model = BackendMenu::findOne($id);
 
@@ -190,5 +190,5 @@ class BackendMenuController extends BaseController
                 $model->insertAfter($t);
                 break;
         }
-    }
+    }*/
 }

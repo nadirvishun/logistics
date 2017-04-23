@@ -5,6 +5,7 @@ use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\RegionPrice */
+/* @var $attributes backend\controllers\RegionPriceController */
 
 $this->title = '查看地区价格';
 $this->params['breadcrumbs'][] = ['label' => '地区价格', 'url' => ['index']];
@@ -16,27 +17,10 @@ $this->params['breadcrumbs'][] = $this->title;
         <h3 class="box-title"><?= Yii::t('common', 'message_view') ?></h3>
     </div>
     <div class="box-body">
-        <?= DetailView::widget([
+        <?=
+        DetailView::widget([
             'model' => $model,
-            'attributes' => [
-                'id',
-                'pid',
-                'region_name',
-                'transport_type',
-                'depart_limitation',
-                'transport_limitation',
-                'pickup_limitation',
-                'status',
-                'sort',
-                'created_by',
-                'created_at',
-                'updated_by',
-                'updated_at',
-//                'first',
-//                'suibian1',
-//                'ss',
-//                'sss',
-            ],
+            'attributes' => $attributes
         ]) ?>
         <p style="margin-top:10px">
             <?= Html::a(Yii::t('common', 'update'), ['update', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
