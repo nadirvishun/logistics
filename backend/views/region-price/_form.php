@@ -27,6 +27,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'region_name', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'init_price', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) ?>
+
     <?php foreach ($specialFields as $value) {
         echo $form->field($model, $value, ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]);
     } ?>

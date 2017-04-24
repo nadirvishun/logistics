@@ -21,7 +21,7 @@ class RegionPriceSearch extends RegionPrice
         return [
             [['id', 'pid', 'transport_type', 'status', 'sort', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
             [['region_name'], 'safe'],
-            [['depart_limitation', 'transport_limitation', 'pickup_limitation'], 'number'],
+            [['init_price', 'depart_limitation', 'transport_limitation', 'pickup_limitation'], 'number'],
             [array_keys(SpecField::getFieldNameOptions()), 'number']//增加动态规格验证
         ];
     }
@@ -69,6 +69,7 @@ class RegionPriceSearch extends RegionPrice
         $query->andFilterWhere([
             'id' => $this->id,
 //            'pid' => $this->pid,
+            'init_price' => $this->init_price,
             'transport_type' => $this->transport_type,
             'depart_limitation' => $this->depart_limitation,
             'transport_limitation' => $this->transport_limitation,

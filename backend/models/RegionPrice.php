@@ -12,6 +12,7 @@ use yii\helpers\ArrayHelper;
  *
  * @property integer $id
  * @property integer $pid
+ * @property string $init_price
  * @property string $region_name
  * @property integer $transport_type
  * @property string $depart_limitation
@@ -23,10 +24,6 @@ use yii\helpers\ArrayHelper;
  * @property string $created_at
  * @property string $updated_by
  * @property string $updated_at
- * @property string $first
- * @property string $suibian1
- * @property string $ss
- * @property string $sss
  */
 class RegionPrice extends \yii\db\ActiveRecord
 {
@@ -62,9 +59,9 @@ class RegionPrice extends \yii\db\ActiveRecord
         $org = [
             //设定默认的值，否则不填写时为null，写入数据库时与not null冲突
             [['depart_limitation', 'transport_limitation', 'pickup_limitation', 'sort'], 'default', 'value' => 0],
-            [['pid', 'region_name', 'transport_type'], 'required'],
+            [['pid', 'region_name','init_price', 'transport_type'], 'required'],
             [['pid', 'transport_type', 'status', 'sort', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
-            [['depart_limitation', 'transport_limitation', 'pickup_limitation'], 'number'],
+            [['init_price','depart_limitation', 'transport_limitation', 'pickup_limitation'], 'number'],
             [['region_name'], 'string', 'max' => 50],
         ];
         //获取动态的验证内容
@@ -88,6 +85,7 @@ class RegionPrice extends \yii\db\ActiveRecord
         $org = [
             'id' => '地区ID',
             'pid' => '上级地区',
+            'init_price' => '起步价格',//todo，修改为具体的数字相关
             'region_name' => '地区名称',
             'transport_type' => '运输方式',
             'depart_limitation' => '发车时效',

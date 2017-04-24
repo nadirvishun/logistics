@@ -60,7 +60,8 @@ class RegionPriceController extends BaseController
                 'rowSelectedClass' => GridView::TYPE_INFO
             ],
             'id',
-            'region_name'
+            'region_name',
+            'init_price'
         ];
         //动态的内容放到中间
         $dynamic = SpecField::getFieldNameOptions();
@@ -174,6 +175,7 @@ class RegionPriceController extends BaseController
                 'label' => $model->getAttributeLabel('transport_type'),
                 'value' => RegionPrice::getTransportType($model->transport_type)
             ],
+            'init_price'
         ];
         //动态的内容放到中间
         $dynamic = SpecField::getFieldNameOptions();

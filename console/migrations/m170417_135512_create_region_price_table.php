@@ -22,6 +22,7 @@ class m170417_135512_create_region_price_table extends Migration
         $this->createTable(self::TBL_NAME, [
             'id' => $this->primaryKey()->comment('地区ID'),
             'pid' => $this->integer()->notNull()->comment('地区父ID'),
+            'init_price' => $this->decimal(10, 2)->notNull()->comment('起步价格'),
             'region_name' => $this->string(50)->notNull()->comment('地区名称'),
             'transport_type' => $this->boolean()->unsigned()->notNull()->comment('运输方式，1直达，2中转'),
             'depart_limitation' => $this->decimal(10, 2)->notNull()->comment('发车时效'),
