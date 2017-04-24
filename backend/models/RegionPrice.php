@@ -59,9 +59,9 @@ class RegionPrice extends \yii\db\ActiveRecord
         $org = [
             //设定默认的值，否则不填写时为null，写入数据库时与not null冲突
             [['depart_limitation', 'transport_limitation', 'pickup_limitation', 'sort'], 'default', 'value' => 0],
-            [['pid', 'region_name','init_price', 'transport_type'], 'required'],
+            [['pid', 'region_name', 'init_price', 'transport_type'], 'required'],
             [['pid', 'transport_type', 'status', 'sort', 'created_by', 'created_at', 'updated_by', 'updated_at'], 'integer'],
-            [['init_price','depart_limitation', 'transport_limitation', 'pickup_limitation'], 'number'],
+            [['init_price', 'depart_limitation', 'transport_limitation', 'pickup_limitation'], 'number'],
             [['region_name'], 'string', 'max' => 50],
         ];
         //获取动态的验证内容
@@ -141,17 +141,12 @@ class RegionPrice extends \yii\db\ActiveRecord
      */
     public static function getRootOptions($key = false)
     {
-        $list = static::find()
-            ->select(['id', 'region_name'])
+        $arr = static::find()
+            ->select(['region_name', 'id'])
             ->where(['pid' => 0])
+            ->indexBy('id')
             ->asArray()
-            ->all();
-        $arr = [];
-        if (!empty($list)) {
-            foreach ($list as $value) {
-                $arr[$value['id']] = $value['region_name'];
-            }
-        }
+            ->column();
         return $key === false ? $arr : ArrayHelper::getValue($arr, $key, Yii::t('common', 'Unknown'));
     }
 

@@ -54,8 +54,10 @@ class BackendMenuController extends BaseController
 //            'searchModel' => $searchModel,
 //            'dataProvider' => $dataProvider,
 //        ]);
+        //todo,目前此widget不支持sort，后续可能改进
         $dataProvider = new ActiveDataProvider([
-            'query' => BackendMenu::find(),
+            'query' => BackendMenu::find()->orderBy(['sort' => SORT_ASC, 'id' => SORT_ASC]),
+//            'sort' => ['defaultOrder' => ['sort' => SORT_ASC, 'id' => SORT_ASC]]
         ]);
         $initial = BackendMenu::findOne($id);
         return $this->render('index', [
@@ -171,24 +173,24 @@ class BackendMenuController extends BaseController
      * @param $target
      * @param $position
      */
-  /*  function actionMove($id, $target, $position)
-    {
-        $model = BackendMenu::findOne($id);
+    /*  function actionMove($id, $target, $position)
+      {
+          $model = BackendMenu::findOne($id);
 
-        $t = BackendMenu::findOne($target);
+          $t = BackendMenu::findOne($target);
 
-        switch ($position) {
-            case 0:
-                $model->insertBefore($t);
-                break;
+          switch ($position) {
+              case 0:
+                  $model->insertBefore($t);
+                  break;
 
-            case 1:
-                $model->appendTo($t);
-                break;
+              case 1:
+                  $model->appendTo($t);
+                  break;
 
-            case 2:
-                $model->insertAfter($t);
-                break;
-        }
-    }*/
+              case 2:
+                  $model->insertAfter($t);
+                  break;
+          }
+      }*/
 }

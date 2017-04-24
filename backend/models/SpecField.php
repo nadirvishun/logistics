@@ -153,16 +153,11 @@ class SpecField extends \yii\db\ActiveRecord
         $list = self::find()
             ->select('name,field_name')
             ->where(['status' => 1])
+            ->indexBy('field_name')
             ->orderBy(['sort' => SORT_DESC, 'id' => SORT_ASC])
             ->asArray()
-            ->all();
-        $arr = [];
-        if (!empty($list)) {
-            foreach ($list as $item) {
-                $arr[$item['field_name']] = $item['name'];
-            }
-        }
-        return $arr;
+            ->column();
+        return $list;
     }
 
     /**

@@ -243,12 +243,11 @@ class BackendMenu extends \yii\db\ActiveRecord
      */
     public static function getStatusOptions($key = false)
     {
-        $sarr = [
-            '' => Yii::t('common', 'Please Select...'),
-            self::STATUS_HIDE => Yii::t('backend_menu', 'Hide'),
-            self::STATUS_VISIBLE => Yii::t('backend_menu', 'Visible')
+        $arr = [
+            self::STATUS_HIDE => Yii::t('common', 'Hide'),
+            self::STATUS_VISIBLE => Yii::t('common', 'Visible')
         ];
-        return $key === false ? $sarr : ArrayHelper::getValue($sarr, $key, Yii::t('common', 'Unknown'));
+        return $key === false ? $arr : ArrayHelper::getValue($arr, $key, Yii::t('common', 'Unknown'));
     }
 
 }
