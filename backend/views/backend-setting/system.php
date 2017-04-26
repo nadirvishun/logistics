@@ -32,11 +32,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'options' => ['class' => 'box-body']
         ]); ?>
         <?= Tabs::widget([
-            'items' => $items
+            'items' => $items,
+            'itemOptions'=>['class' => 'p-10']
         ]);
         ?>
-        <div class="form-group">
-            <label class="col-lg-2 control-label" for="">&nbsp;</label>
+        <div class="form-group p-10">
             <?= Html::submitButton(Yii::t('common', 'save'), ['class' => 'btn btn-primary']) ?>
         </div>
         <?php ActiveForm::end(); ?>
