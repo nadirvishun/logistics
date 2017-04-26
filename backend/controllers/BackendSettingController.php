@@ -47,9 +47,12 @@ class BackendSettingController extends BaseController
      */
     public function actionSystem()
     {
-        if(Yii::$app->request->post()){
-            print_r(Yii::$app->request->post('Setting'));
-            exit;
+        if (Yii::$app->request->post()) {
+            $settings = Yii::$app->request->post('Setting');
+            foreach ($settings as $key => $value) {
+                BackendSetting::updateAll(['value' => $value], ['alias' => $key]);
+            }
+            return $this->redirectSuccess(['system'], Yii::t('common', 'Update Success'));
         }
         //组装成TabWidget所需求的形式，这里是显示全部的，而不是一个链接一个链接的保存
         //获取顶级

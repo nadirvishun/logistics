@@ -187,7 +187,8 @@ class BackendSetting extends \yii\db\ActiveRecord
             self::TEXT => Yii::t('backend_setting', 'text'),
             self::PASSWORD => Yii::t('backend_setting', 'password'),
             self::SELECT => Yii::t('backend_setting', 'select'),
-            self::RADIO => Yii::t('backend_setting', 'radio'),
+            //todo,github上的switchIput widget 对此支持不好，暂时注释掉已提交issue： https://github.com/kartik-v/yii2-widget-switchinput/issues/29
+//            self::RADIO => Yii::t('backend_setting', 'radio'),
 //            self::CHECKBOX => Yii::t('backend_setting', 'checkbox'),
             self::TEXTAREA => Yii::t('backend_setting', 'textarea'),
 //            self::FILE => Yii::t('backend_setting', 'file'),
