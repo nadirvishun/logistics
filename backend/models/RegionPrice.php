@@ -143,7 +143,7 @@ class RegionPrice extends \yii\db\ActiveRecord
     {
         $arr = static::find()
             ->select(['region_name', 'id'])
-            ->where(['pid' => 0])
+            ->where(['pid' => 0, 'status' => self::STATUS_YES])
             ->indexBy('id')
             ->asArray()
             ->column();
@@ -151,13 +151,40 @@ class RegionPrice extends \yii\db\ActiveRecord
     }
 
     /**
-     * 根据ID获取地区名称
-     * @param $id
+     * 根据地区相关的下拉菜单货单个数据
+     * @param bool|integer $id
+     * @param bool|string $originRegion 如果包含始发地，需将始发地名称传递
      * @return string
      */
-    public static function getRegionNameById($id)
+    public static function getRegionOptions($id = false, $originRegion = false)
     {
-        $info = static::findOne($id);
-        return empty($info['region_name']) ? Yii::t('common', 'Unknown') : $info['region_name'];
+        $arr = static::find()
+            ->select(['region_name', 'id'])
+            ->where(['!=', 'pid', 0])
+            ->andWhere(['status' => self::STATUS_YES])
+            ->indexBy('id')
+            ->asArray()
+            ->column();
+        //如果包含始发地,则名称中需要展示始发地信息
+        if ($originRegion !== false && !empty($arr)) {
+            foreach ($arr as $key => $value) {
+                $arr[$key] = $originRegion . '-----' . $value;
+            }
+        }
+        return $id === false ? $arr : ArrayHelper::getValue($arr, $id, Yii::t('common', 'Unknown'));
+    }
+
+    /**
+     * 根据地区ID和对应的区间来获取价格
+     * @param $regionId
+     * @param $fieldName
+     * @return false|null|string
+     */
+    public function getRegionPrice($regionId, $fieldName)
+    {
+        return static::find()
+            ->select($fieldName)
+            ->where(['id' => $regionId, 'status' => self::STATUS_YES])
+            ->scalar();
     }
 }

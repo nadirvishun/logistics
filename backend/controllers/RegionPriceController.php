@@ -195,7 +195,7 @@ class RegionPriceController extends BaseController
             'id',
             [
                 'label' => $model->getAttributeLabel('pid'),
-                'value' => RegionPrice::getRegionNameById($model->pid)
+                'value' => RegionPrice::getRegionOptions($model->pid)
             ],
             'region_name',
             [

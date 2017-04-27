@@ -187,4 +187,19 @@ class SpecField extends \yii\db\ActiveRecord
         ];
         return $key === false ? $arr : ArrayHelper::getValue($arr, $key, Yii::t('common', 'Unknown'));
     }
+
+    /**
+     * 根据比率来查询对应的字段名
+     * @param $ratio
+     * @return false|null|string
+     */
+    public static function getFieldNameByRatio($ratio)
+    {
+        return static::find()
+            ->select('field_name')
+            ->where(['>=', 'min', $ratio])
+            ->andWhere(['<=', 'max', $ratio])
+            ->andWhere(['status' => self::STATUS_YES])
+            ->scalar();
+    }
 }

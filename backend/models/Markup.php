@@ -142,4 +142,36 @@ class Markup extends \yii\db\ActiveRecord
         ];
         return $key === false ? $arr : ArrayHelper::getValue($arr, $key, Yii::t('common', 'Unknown'));
     }
+
+    /**
+     * 获取根据重量和体积获取加价的百分比
+     * @param $price
+     * @param $weight
+     * @param $volume
+     * @return false|null|string
+     */
+    public function getMarkupRatio($price, $weight, $volume)
+    {
+        $ratio = $weight / $volume;
+        $setRatio = BackendSetting::getValueByAlias('markup_ratio');//加价分割点
+        //当小于这个比率时，按照吨价计算
+        if ($ratio < $setRatio) {
+            $markupRatio = static::find()
+                ->select('markup_ratio')
+                ->where(['>=', 'min', $weight])
+                ->andWhere(['<=', 'max', $weight])
+                ->andWhere(['status' => self::STATUS_YES, 'type' => self::TYPE_WEIGHT])
+                ->scalar();
+            $finalPrice = $price * $weight * (1 + $markupRatio / 100);
+        } else {//否则按照市价来计算
+            $markupRatio = static::find()
+                ->select('markup_ratio')
+                ->where(['>=', 'min', $volume])
+                ->andWhere(['<=', 'max', $volume])
+                ->andWhere(['status' => self::STATUS_YES, 'type' => self::TYPE_VOLUME])
+                ->scalar();
+            $finalPrice = $price * $volume * (1 + $markupRatio / 100);
+        }
+        return $finalPrice;
+    }
 }
