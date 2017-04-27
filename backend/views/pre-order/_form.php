@@ -50,7 +50,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'goods_number', ['options' => ['class' => 'form-group c-md-5']])->textInput() ?>
 
-    <?= $form->field($model, 'estimate_price', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) ?>
+    <?php //= $form->field($model, 'estimate_price', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'remark', ['options' => ['class' => 'form-group c-md-6']])->textarea(['rows' => 6]) ?>
 

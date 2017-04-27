@@ -48,10 +48,10 @@ class PreOrderSearch extends PreOrder
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            //'pagination' => [
-                //'pageSize' => 20,
-            //],
-            //'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+            'sort' => ['defaultOrder' => ['is_view' => SORT_ASC, 'order_id' => SORT_DESC]]
         ]);
 
         $this->load($params);

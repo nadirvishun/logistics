@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'class' => 'kartik\grid\EditableColumn',
                 'attribute' => 'max',
             ],
-            [
+            /*[
                 'class' => '\kartik\grid\DataColumn',
                 'attribute' => 'by_number',
                 'filterType' => GridView::FILTER_SELECT2,
@@ -49,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($model, $key, $index, $column) {
                     return SpecField::getByNumOptions($model->by_number);
                 }
-            ],
+            ],*/
             [
                 'class' => '\kartik\grid\DataColumn',
                 'attribute' => 'status',

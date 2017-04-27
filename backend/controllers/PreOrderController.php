@@ -64,8 +64,14 @@ class PreOrderController extends BaseController
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+        //点击时修改阅读状态
+        if ($model->is_view == 0) {
+            $model->is_view = 1;
+            $model->save(false);
+        }
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
         ]);
     }
 
@@ -86,6 +92,8 @@ class PreOrderController extends BaseController
             }
             //根基传递过来的城市ID获取城市的名称
             $model->region_name = RegionPrice::getRegionOptions($model->region_id);
+            //生成订单号
+            $model->order_sn = static::genOrderSn();
             if ($model->save(false)) {
                 return $this->redirectSuccess(['index'], Yii::t('common', 'Create Success'));
             }
@@ -111,6 +119,10 @@ class PreOrderController extends BaseController
             //return $this->redirect(['view', 'id' => $model->order_id]);
             return $this->redirectSuccess(['index'], Yii::t('common', 'Update Success'));
         } else {
+            if ($model->is_view == 0) {
+                $model->is_view = 1;
+                $model->save(false);
+            }
             return $this->render('update', [
                 'model' => $model,
             ]);
@@ -144,5 +156,19 @@ class PreOrderController extends BaseController
         } else {
             throw new NotFoundHttpException(Yii::t('common', 'The requested page does not exist.'));
         }
+    }
+
+    /**
+     * 参照shopnc的支付单号编写
+     * 生成订单编号(两位随机 + 从2000-01-01 00:00:00 到现在的秒数+微秒+三位随机数)
+     * 长度 =2位 + 10位 + 3位 + 3位  = 18位
+     * @return string
+     */
+    public static function genOrderSn()
+    {
+        return mt_rand(10, 99)
+            . sprintf('%010d', time() - 946656000)
+            . sprintf('%03d', (float)microtime() * 1000)
+            . mt_rand(100, 999);
     }
 }

@@ -95,11 +95,11 @@ class PreOrder extends \yii\db\ActiveRecord
             'goods_weight' => '货物重量',
             'goods_volume' => '货物体积',
             'goods_number' => '货物数量',
-            'spec_field' => '查询出来的对应的区间字段名',
-            'spec_field_name' => '查询出来的对应的区间名称',
+            'spec_field' => '区间字段',
+            'spec_field_name' => '区间名称',
             'estimate_price' => '估算价格',
             'remark' => '备注',
-            'is_view' => '是否已查看',
+            'is_view' => '状态',
             'created_by' => '创建人',
             'created_at' => '创建时间',
             'updated_by' => '更新人',
@@ -115,8 +115,8 @@ class PreOrder extends \yii\db\ActiveRecord
     public static function getViewOptions($key = false)
     {
         $arr = [
-            self::NO_VIEW => '未查看',
-            self::IS_VIEW => '已查看'
+            self::NO_VIEW => '未阅',
+            self::IS_VIEW => '已阅'
         ];
         return $key === false ? $arr : ArrayHelper::getValue($arr, $key, Yii::t('common', 'Unknown'));
     }
@@ -127,6 +127,7 @@ class PreOrder extends \yii\db\ActiveRecord
      * @param $volume
      * @param $number
      * @param $regionId
+     * @return array
      */
     public function calcPrice($weight, $volume, $number, $regionId)
     {
@@ -135,16 +136,21 @@ class PreOrder extends \yii\db\ActiveRecord
         //实例化地区价格
         $regionPriceModel = new RegionPrice();
         $markupModel = new Markup();
+        $specFieldModel = new SpecField();
         //如果在起步价格内，则按照件数计算
         if ($weight <= $initWeight && $volume <= $initVolume) {
             $specField = 'init_price';
-            $specFieldName = $regionPriceModel->attributeLabels['init_price'];
+            $specFieldName = $regionPriceModel->getAttributeLabel('init_price');
             //获取区域对应的价格(在此区间内不加价)
             $price = $regionPriceModel->getRegionPrice($regionId, $specField);
-            $estimatePrice = empty($price) ? 0 : $price;
+            if (!empty($price)) {
+                $estimatePrice = $price * $number;//按照件数计算
+            } else {
+                $estimatePrice = 0;
+            }
         } else {
-            $ratio = $weight / $volume;
-            $field = SpecField::getFieldNameByRatio($ratio);
+            $ratio = $volume / $weight;
+            $field = $specFieldModel->getFieldNameByRatio($ratio);
             //如果为空，说明没有在任何一个区间内，此时spec_field,spec_field_name,estimate_price都无值
             if (empty($field)) {
                 $specField = '';
@@ -152,7 +158,7 @@ class PreOrder extends \yii\db\ActiveRecord
                 $estimatePrice = 0;
             } else {
                 $specField = $field;
-                $specFieldName = $regionPriceModel->attributeLabels[$specField];
+                $specFieldName = $regionPriceModel->getAttributeLabel($specField);
                 //计算区域价格
                 $price = $regionPriceModel->getRegionPrice($regionId, $specField);
                 if (!empty($price)) {//如果获取到单位价格

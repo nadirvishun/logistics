@@ -6,8 +6,8 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model backend\models\PreOrder */
 
-$this->title = 'View Pre Order';
-$this->params['breadcrumbs'][] = ['label' => 'Pre Orders', 'url' => ['index']];
+$this->title = '查看订单';
+$this->params['breadcrumbs'][] = ['label' => '预约订单', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pre-order-view box box-primary">
@@ -33,12 +33,24 @@ $this->params['breadcrumbs'][] = $this->title;
                 'spec_field',
                 'spec_field_name',
                 'estimate_price',
-                'remark',
-                'is_view',
-                'created_by',
-                'created_at',
-                'updated_by',
-                'updated_at',
+                [
+                    'label' => $model->getAttributeLabel('remark'),
+                    'value' => empty($model->remark)?'暂无':$model->remark
+                ],
+                [
+                    'label' => $model->getAttributeLabel('is_view'),
+                    'value' => \backend\models\PreOrder::getViewOptions($model->is_view)
+                ],
+                [
+                    'label' => $model->getAttributeLabel('created_by'),
+                    'value' => \backend\models\Admin::getUsernameById($model->created_by)
+                ],
+                'created_at:datetime',
+                [
+                    'label' => $model->getAttributeLabel('updated_by'),
+                    'value' => \backend\models\Admin::getUsernameById($model->updated_by)
+                ],
+                'updated_at:datetime',
             ],
         ]) ?>
         <p style="margin-top:10px">

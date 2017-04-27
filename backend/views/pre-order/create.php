@@ -6,8 +6,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model backend\models\PreOrder */
 
-$this->title = 'Create Pre Order';
-$this->params['breadcrumbs'][] = ['label' => 'Pre Orders', 'url' => ['index']];
+$this->title = '创建订单';
+$this->params['breadcrumbs'][] = ['label' => '预约订单', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pre-order-create box box-success">

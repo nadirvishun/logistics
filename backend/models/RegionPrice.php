@@ -81,11 +81,13 @@ class RegionPrice extends \yii\db\ActiveRecord
      */
     public function attributeLabels()
     {
-
+        $initWeight = BackendSetting::getValueByAlias('init_weight');//起步重量
+        $initVolume = BackendSetting::getValueByAlias('init_volume');//起步体积
+        $init_price=$initWeight.'T/'.$initVolume.'方内';
         $org = [
             'id' => '地区ID',
             'pid' => '上级地区',
-            'init_price' => '起步价格',//todo，修改为具体的数字相关
+            'init_price' => $init_price,
             'region_name' => '地区名称',
             'transport_type' => '运输方式',
             'depart_limitation' => '发车时效',

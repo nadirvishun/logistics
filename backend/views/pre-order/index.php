@@ -1,5 +1,6 @@
 <?php
 
+use backend\models\PreOrder;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\widgets\Pjax;
@@ -7,7 +8,7 @@ use yii\widgets\Pjax;
 /* @var $searchModel backend\models\search\PreOrderSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Pre Orders';
+$this->title = '预约订单';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pre-order-index grid-view box box-primary">
@@ -25,22 +26,46 @@ $this->params['breadcrumbs'][] = $this->title;
                 'rowSelectedClass' => GridView::TYPE_INFO
             ],
 
-            'order_id',
+//            'order_id',
             'order_sn',
-            'region_id',
+//            'region_id',
             'region_name',
             'contact',
-            // 'mobile',
+             'mobile',
             // 'address',
             // 'goods_name',
-            // 'goods_weight',
-            // 'goods_volume',
-            // 'goods_number',
+             'goods_weight',
+            [
+                'attribute' => 'goods_weight',
+                'value' => function ($model, $key, $index, $column) {
+                    return Yii::$app->formatter->asDecimal($model->goods_weight/1000,3)."T";
+                }
+            ],
+             'goods_volume',
+             'goods_number',
             // 'spec_field',
             // 'spec_field_name',
-            // 'estimate_price',
+            [
+                'attribute' => 'estimate_price',
+                'value' => function ($model, $key, $index, $column) {
+                    return $model->estimate_price==0?'未知':$model->estimate_price;
+                }
+            ],
             // 'remark',
-            // 'is_view',
+            [
+                'class' => '\kartik\grid\DataColumn',
+                'attribute' => 'is_view',
+                'filterType' => GridView::FILTER_SELECT2,
+                'filterWidgetOptions' => [
+                    'data' => PreOrder::getViewOptions(),
+                    'options' => [
+                        'prompt' => Yii::t('common', 'Please Select...'),
+                    ],
+                ],
+                'value' => function ($model, $key, $index, $column) {
+                    return PreOrder::getViewOptions($model->is_view);
+                }
+            ],
             // 'created_by',
             // 'created_at',
             // 'updated_by',
@@ -59,7 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'data-pjax' => '0',
                             'class' => 'btn btn-xs btn-info'
                         ];
-                        return Html::a('<i class="fa fa-fw fa-eye"></i>', ['view', 'id' => $model->id], $options);
+                        return Html::a('<i class="fa fa-fw fa-eye"></i>', ['view', 'id' => $model->order_id], $options);
                     },
                     'update' => function ($url, $model, $key) {
                         $options = [
@@ -68,7 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'data-pjax' => '0',
                             'class' => 'btn btn-xs btn-warning'
                         ];
-                        return Html::a('<i class="fa fa-fw fa-pencil"></i>', ['update', 'id' => $model->id], $options);
+                        return Html::a('<i class="fa fa-fw fa-pencil"></i>', ['update', 'id' => $model->order_id], $options);
                     },
                     'delete' => function ($url, $model, $key) {
                         $options = [
@@ -79,7 +104,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'data-method' => 'post',
                             'class' => 'btn btn-xs btn-danger'
                         ];
-                        return Html::a('<i class="fa fa-fw fa-trash"></i>', ['delete', 'id' => $model->id], $options);
+                        return Html::a('<i class="fa fa-fw fa-trash"></i>', ['delete', 'id' => $model->order_id], $options);
                     }
                 ],
             ]

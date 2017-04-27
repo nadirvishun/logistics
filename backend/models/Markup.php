@@ -152,25 +152,35 @@ class Markup extends \yii\db\ActiveRecord
      */
     public function getMarkupRatio($price, $weight, $volume)
     {
-        $ratio = $weight / $volume;
+        $ratio = $volume / $weight;
         $setRatio = BackendSetting::getValueByAlias('markup_ratio');//加价分割点
         //当小于这个比率时，按照吨价计算
         if ($ratio < $setRatio) {
             $markupRatio = static::find()
                 ->select('markup_ratio')
-                ->where(['>=', 'min', $weight])
-                ->andWhere(['<=', 'max', $weight])
+                ->where(['<=', 'min', $weight])
+                ->andWhere(['>=', 'max', $weight])
                 ->andWhere(['status' => self::STATUS_YES, 'type' => self::TYPE_WEIGHT])
                 ->scalar();
-            $finalPrice = $price * $weight * (1 + $markupRatio / 100);
+            //如果没有找到对应的区间或者为0，按照不加价来计算
+            if (empty($markupRatio)) {
+                $finalPrice = $price * $weight;
+            } else {
+                $finalPrice = $price * $weight * (1 + $markupRatio / 100);
+            }
         } else {//否则按照市价来计算
             $markupRatio = static::find()
                 ->select('markup_ratio')
-                ->where(['>=', 'min', $volume])
-                ->andWhere(['<=', 'max', $volume])
+                ->where(['<=', 'min', $volume])
+                ->andWhere(['>=', 'max', $volume])
                 ->andWhere(['status' => self::STATUS_YES, 'type' => self::TYPE_VOLUME])
                 ->scalar();
-            $finalPrice = $price * $volume * (1 + $markupRatio / 100);
+            //如果没有找到对应的区间或者为0，按照不加价来计算
+            if (empty($markupRatio)) {
+                $finalPrice = $price * $volume;
+            } else {
+                $finalPrice = $price * $volume * (1 + $markupRatio / 100);
+            }
         }
         return $finalPrice;
     }

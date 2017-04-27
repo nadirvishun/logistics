@@ -25,10 +25,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'min',
                 'max',
                 'sort',
-                [
-                    'label' => $model->getAttributeLabel('by_number'),
-                    'value' => \backend\models\SpecField::getByNumOptions($model->by_number)
-                ],
+//                [
+//                    'label' => $model->getAttributeLabel('by_number'),
+//                    'value' => \backend\models\SpecField::getByNumOptions($model->by_number)
+//                ],
                 [
                     'label' => $model->getAttributeLabel('status'),
                     'value' => \backend\models\SpecField::getStatusOptions($model->status)

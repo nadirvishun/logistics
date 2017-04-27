@@ -193,12 +193,12 @@ class SpecField extends \yii\db\ActiveRecord
      * @param $ratio
      * @return false|null|string
      */
-    public static function getFieldNameByRatio($ratio)
+    public function getFieldNameByRatio($ratio)
     {
         return static::find()
             ->select('field_name')
-            ->where(['>=', 'min', $ratio])
-            ->andWhere(['<=', 'max', $ratio])
+            ->where(['<=', 'min', $ratio])
+            ->andWhere(['>=', 'max', $ratio])
             ->andWhere(['status' => self::STATUS_YES])
             ->scalar();
     }

@@ -56,8 +56,7 @@ class RegionPriceController extends BaseController
         //如果是编辑字段
         if (Yii::$app->request->post('hasEditable')) {
             $id = Yii::$app->request->post('editableKey');//获取ID
-            $model = SpecField::findOne($id);
-            $model->scenario = 'editable';
+            $model = RegionPrice::findOne($id);
             //由于传递的SpecField是二维数组，将其转为一维
             $attribute = Yii::$app->request->post('editableAttribute');//获取名称
             $posted = current(Yii::$app->request->post('RegionPrice'));
@@ -195,7 +194,7 @@ class RegionPriceController extends BaseController
             'id',
             [
                 'label' => $model->getAttributeLabel('pid'),
-                'value' => RegionPrice::getRegionOptions($model->pid)
+                'value' => RegionPrice::getRootOptions($model->pid)
             ],
             'region_name',
             [
