@@ -1,5 +1,6 @@
 <?php
 return [
+    'name'=>'华昶物流',
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     //设置i18n语言，前后台通用
     'sourceLanguage' => 'en-US',

@@ -93,7 +93,7 @@ class PreOrderController extends BaseController
             //根基传递过来的城市ID获取城市的名称
             $model->region_name = RegionPrice::getRegionOptions($model->region_id);
             //生成订单号
-            $model->order_sn = static::genOrderSn();
+            $model->order_sn = $model->genOrderSn();
             if ($model->save(false)) {
                 return $this->redirectSuccess(['index'], Yii::t('common', 'Create Success'));
             }
@@ -158,17 +158,4 @@ class PreOrderController extends BaseController
         }
     }
 
-    /**
-     * 参照shopnc的支付单号编写
-     * 生成订单编号(两位随机 + 从2000-01-01 00:00:00 到现在的秒数+微秒+三位随机数)
-     * 长度 =2位 + 10位 + 3位 + 3位  = 18位
-     * @return string
-     */
-    public static function genOrderSn()
-    {
-        return mt_rand(10, 99)
-            . sprintf('%010d', time() - 946656000)
-            . sprintf('%03d', (float)microtime() * 1000)
-            . mt_rand(100, 999);
-    }
 }

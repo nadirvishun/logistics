@@ -1,15 +1,13 @@
 <?php
 
-namespace backend\models;
+namespace frontend\models;
 
 use Yii;
-use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%pre_order}}".
- * 由于前台也会用到此模型，所以将共用部分放在common中，然后前台和后台都继承common
  *
  * @property integer $order_id
  * @property string $order_sn
@@ -39,9 +37,9 @@ class PreOrder extends \common\models\PreOrder
      */
     public function behaviors()
     {
+        //只纪录时间的
         return [
             TimestampBehavior::className(),
-            BlameableBehavior::className()
         ];
     }
 
