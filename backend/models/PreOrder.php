@@ -55,4 +55,14 @@ class PreOrder extends \common\models\PreOrder
             ]
         );
     }
+
+    /**
+     * 获取未读的数量,用户后台上方提示
+     */
+    public static function getUnViewCount()
+    {
+        return static::find()
+            ->where(['is_view' => self::NO_VIEW])
+            ->count();
+    }
 }

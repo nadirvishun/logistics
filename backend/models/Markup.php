@@ -182,6 +182,6 @@ class Markup extends \yii\db\ActiveRecord
                 $finalPrice = $price * $volume * (1 + $markupRatio / 100);
             }
         }
-        return $finalPrice;
+        return Yii::$app->formatter->asDecimal($finalPrice,2);
     }
 }

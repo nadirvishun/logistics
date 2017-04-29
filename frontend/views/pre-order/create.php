@@ -5,6 +5,7 @@ use kartik\widgets\Select2;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
+use kartik\dialog\Dialog;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\PreOrder */
@@ -18,18 +19,9 @@ use yii\widgets\ActiveForm;
             'options' => ['class' => 'box-body']
         ]); ?>
 
-
-        <?=
-        $form->field($model, 'region_id', ['options' => ['class' => 'form-group c-md-5']])->widget(Select2::classname(), [
-            'data' => RegionPrice::getRegionOptions(false, '潍坊'),
-            'options' => [
-                'prompt' => Yii::t('common', 'Please Select...'),
-                'encode' => false,
-            ],
-            'pluginOptions' => [
-                'allowClear' => true
-            ],
-        ]) ?>
+        <?=$form->field($model,'region_id', ['options' => ['class' => 'form-group c-md-5']])
+            ->dropDownList(RegionPrice::getRegionOptions(false, '潍坊'),['prompt' => Yii::t('common', 'Please Select...')])
+        ?>
 
         <?= $form->field($model, 'contact', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) ?>
 
@@ -63,24 +55,37 @@ use yii\widgets\ActiveForm;
         <?php ActiveForm::end(); ?>
 
     </div>
+    <!--引入弹出框小部件-->
+<?= Dialog::widget([
+    'libName' => 'krajeeDialog',
+    'options' => [
+        'draggable' => true,
+        'title' => '估算运费',
+        'type'=>Dialog::TYPE_WARNING
+    ]
+]);
+?>
+<?= \common\widgets\Popup::widget([
+    'second'=>0//设置为一直存在
+]) ?>
 <?php
 $url = Url::to(['calc-price']);
+//todo，通过设置延迟来实现正确的判定，但这仅仅是个取巧的方法
 $js = <<<JS
-//todo,这个js验证还是不完善
 $('#calc-price').on('click', function(e) {
     $('#pre-order-form').yiiActiveForm('validateAttribute', 'preorder-region_id');
     $('#pre-order-form').yiiActiveForm('validateAttribute', 'preorder-goods_volume');
     $('#pre-order-form').yiiActiveForm('validateAttribute', 'preorder-goods_weight');
     $('#pre-order-form').yiiActiveForm('validateAttribute', 'preorder-goods_number');
-    
-    var weight=$('#preorder-goods_weight').val();
-    var volume=$('#preorder-goods_volume').val();
-    var number=$('#preorder-goods_number').val();
-    var region_id=$('#preorder-region_id').val();
-    if(!weight || !volume || !number || !region_id){
-        return false;
-    }
-    $.ajax({
+    setTimeout(function(){
+        if($('#pre-order-form').find('.has-error').length){
+            return false;
+        }
+        var weight=$('#preorder-goods_weight').val();
+        var volume=$('#preorder-goods_volume').val();
+        var number=$('#preorder-goods_number').val();
+        var region_id=$('#preorder-region_id').val();
+        $.ajax({
             url: "{$url}",
             type: 'post',
             dataType: "json",
@@ -98,6 +103,7 @@ $('#calc-price').on('click', function(e) {
                 }
             }
         });
+    }, 1000);
 })
 JS;
 

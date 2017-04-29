@@ -28,7 +28,7 @@ class PreOrderController extends BaseController
             //生成订单号
             $model->order_sn = $model->genOrderSn();
             if ($model->save(false)) {
-                return $this->redirectSuccess(['create'], Yii::t('common', 'Create Success'));
+                return $this->redirectSuccess(['create'],'提交预约成功，我们工作人员会尽快联系您！');
             }
         }
         $model->loadDefaultValues();
@@ -49,7 +49,7 @@ class PreOrderController extends BaseController
             $region_id = Yii::$app->request->post('region_id');
             //计算价格
             $calcArr = $model->calcPrice($weight / 1000, $volume, $number, $region_id);
-            $out = Json::encode($calcArr);
+            $out = Json::encode(['estimate_price' => $calcArr['estimate_price']]);
             echo $out;
         }
     }

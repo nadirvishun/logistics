@@ -34,7 +34,6 @@ $this->params['breadcrumbs'][] = $this->title;
              'mobile',
             // 'address',
             // 'goods_name',
-             'goods_weight',
             [
                 'attribute' => 'goods_weight',
                 'value' => function ($model, $key, $index, $column) {
