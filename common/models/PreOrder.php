@@ -79,7 +79,7 @@ class PreOrder extends \yii\db\ActiveRecord
             'order_sn' => '订单SN',
             'region_id' => '配送区域',
             'region_name' => '区域名称',
-            'contact' => '联系人',
+            'contact' => '发货人',
             'mobile' => '联系电话',
             'address' => '地址',
             'goods_name' => '货物名称',

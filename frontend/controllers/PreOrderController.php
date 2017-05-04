@@ -28,7 +28,7 @@ class PreOrderController extends BaseController
             //生成订单号
             $model->order_sn = $model->genOrderSn();
             if ($model->save(false)) {
-                return $this->redirectSuccess(['create'],'提交预约成功，我们工作人员会尽快联系您！');
+                return $this->redirectSuccess(['create'],'提交成功！稍后我们会尽快安排专职人员跟您联系；如有疑问请致电：0536-8916677');
             }
         }
         $model->loadDefaultValues();

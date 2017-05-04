@@ -45,7 +45,10 @@ use kartik\dialog\Dialog;
 
         <?php //= $form->field($model, 'estimate_price', ['options' => ['class' => 'form-group c-md-5']])->textInput(['maxlength' => true]) ?>
 
-        <?= $form->field($model, 'remark', ['options' => ['class' => 'form-group c-md-6']])->textarea(['rows' => 6]) ?>
+        <?= $form->field($model, 'remark', ['options' => ['class' => 'form-group c-md-6']])
+            ->textarea(['rows' => 6])
+            ->hint('如需上门取货，送货上门等增值业务具体费用请咨询客服。最终解释权归华昶物流所有。')
+        ?>
 
         <div class="form-group">
             <?= Html::button('估算价格', ['id' => 'calc-price', 'class' => 'btn btn-warning pull-left', 'style' => 'margin-left:15%']) ?>
